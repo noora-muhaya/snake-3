@@ -198,9 +198,8 @@ def iniciar_jogo():
                     t2.write("Score: {}  High Score: {}".format(score, high_score), align="center", font=("Courier", 24, "normal"))
 
         time.sleep(delay)
-   
+        t1.ontimer(game_loop, int(delay * 1000))
     game_loop()
-    t1.ontimer(game_loop, int(delay * 1000))
     
 tela_inicio = tk.Tk() # criação da tela de início
 tela_inicio.title("Tela de Início")
