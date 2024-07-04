@@ -94,9 +94,11 @@ def iniciar_jogo():
         winsound.PlaySound(sound_file, winsound.SND_ASYNC)
 
     play_sound("The-Pink-Panther-Theme-Music-موسيقى-النمر-الوردي.wav")
-
-    while True: #sempre irá executar
-        t1.update() #atualização da tela
+    
+    def game_loop():
+        global delay, score, high_score
+        while True: #sempre irá executar
+            t1.update() #atualização da tela
         
 
         if cobra.xcor()>290 or cobra.xcor()<-290 or cobra.ycor()>290 or cobra.ycor()<-290: #se a cabeça da cobra toca as boras da janela
@@ -170,7 +172,8 @@ def iniciar_jogo():
 
 
         time.sleep(delay)
-
+   
+    game_loop()
 
 tela_inicio = tk.Tk() # criação da tela de início
 tela_inicio.title("Tela de Início")
