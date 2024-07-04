@@ -137,7 +137,10 @@ def iniciar_jogo():
             x=tamanho[index-1].xcor()#o pedaço do corpo assume a posição do anterior 
             y=tamanho[index-1].ycor()
             tamanho[index].goto(x,y)
-
+            
+        if score % 50 == 0:  # Aumenta a velocidade a cada 100 pontos
+                delay -= 0.02
+    
         if len(tamanho)>0: # faz o corpo seguir a cobra
             x=cobra.xcor()
             y=cobra.ycor()
