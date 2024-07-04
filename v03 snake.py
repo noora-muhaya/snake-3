@@ -36,6 +36,14 @@ def iniciar_jogo():
     comida.penup()
     comida.goto(0,100)
 
+    # inimigo
+    inimigo = turtle.Turtle()
+    inimigo.speed(0)
+    inimigo.shape("triangle")
+    inimigo.color("blue")
+    inimigo.penup()
+    inimigo.goto(random.randint(-285, 285), random.randint(-285, 260))
+
     tamanho=[]  #armazenar os segmentos do corpo da cobra
 
 
@@ -135,15 +143,16 @@ def iniciar_jogo():
                 high_score = score
             t2.clear()
             t2.write("Score: {}  High Score: {}".format(score,high_score),align="center",font=("Courier", 24, "normal"))
-         
+
+            if score % 50 == 0:  # Aumenta a velocidade a cada 100 pontos
+                delay -= 0.02
          
         for index in range(len(tamanho)-1,0,-1):#posiciona o corpo
             x=tamanho[index-1].xcor()#o pedaço do corpo assume a posição do anterior 
             y=tamanho[index-1].ycor()
             tamanho[index].goto(x,y)
             
-        if score % 50 == 0:  # Aumenta a velocidade a cada 100 pontos
-                delay -= 0.02
+
     
         if len(tamanho)>0: # faz o corpo seguir a cobra
             x=cobra.xcor()
