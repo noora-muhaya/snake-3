@@ -104,7 +104,7 @@ def iniciar_jogo():
     def play_sound(sound_file, time=0):
         winsound.PlaySound(sound_file, winsound.SND_ASYNC)
 
-    play_sound("snake.wav")
+    play_sound("The Pink Panther Theme Music موسيقى النمر الوردي.mp3")
 
     def mover_inimigos():
         for inimigo in inimigos:
