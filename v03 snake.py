@@ -8,6 +8,7 @@ import tkinter as tk
 delay = 0.1 # tempo de espera entre cada movimento da cobra
 score=0 #pontuação atual do jogador 
 high_score=0  #maior pontuação registrada
+inimigos = []
 
 def iniciar_jogo():
     global score, high_score, delay
@@ -36,13 +37,17 @@ def iniciar_jogo():
     comida.penup()
     comida.goto(0,100)
 
-    # inimigo
-    inimigo = turtle.Turtle()
-    inimigo.speed(0)
-    inimigo.shape("triangle")
-    inimigo.color("blue")
-    inimigo.penup()
-    inimigo.goto(random.randint(-285, 285), random.randint(-285, 260))
+    def criar_inimigo():
+        inimigo = turtle.Turtle()
+        inimigo.speed(0)
+        inimigo.shape("turtle")
+        inimigo.color("purple")
+        inimigo.left(90)
+        inimigo.penup()
+        inimigo.goto(random.randint(-285, 285), random.randint(-285, 260))
+        inimigos.append(inimigo)
+    
+    criar_inimigo()  # Criar o primeiro inimigo
 
     tamanho=[]  #armazenar os segmentos do corpo da cobra
 
@@ -102,25 +107,30 @@ def iniciar_jogo():
         winsound.PlaySound(sound_file, winsound.SND_ASYNC)
 
     play_sound("The-Pink-Panther-Theme-Music-موسيقى-النمر-الوردي.wav")
-    
+
+    def mover_inimigos():
+        for inimigo in inimigos:
+            x = random.randint(-285, 285)
+            y = random.randint(-285, 260)
+            inimigo.goto(x, y)
+        t1.ontimer(mover_inimigos, 5000)  # Muda a posição dos inimigos a cada 5 segundos
+
+    mover_inimigos()
+  
     def game_loop():
         global delay, score, high_score
-        while True: #sempre irá executar
-            t1.update() #atualização da tela
+        t1.update() #atualização da tela
         
 
         if cobra.xcor()>290 or cobra.xcor()<-290 or cobra.ycor()>290 or cobra.ycor()<-290: #se a cabeça da cobra toca as boras da janela
             time.sleep(1) #o jogo pausa por 1 segundo
             cobra.goto(0,0) #reposicionar no centro da tela
             cobra.direction="stop" # não se mover antes de começar jogar
-
             for corpo in tamanho:
                 corpo.goto(1000,1000) #o corpo da cobra sai da tela, fica so a cabeça
-
             tamanho.clear() #remover o corpo da cobra
             score=0 #pontuação atual é redefinida para 0
             delay = 0.1 # pausa o jogo 
-
             t2.clear() #limpa a "caneta"
             t2.write("Score: {}  High Score: {}".format(score, high_score), align="center", font=("Courier", 24, "normal")) #A pontuação exibida na tela é atualizada para refletir a pontuação atual e a maior pontuação registrada.
 
@@ -128,8 +138,7 @@ def iniciar_jogo():
         if cobra.distance(comida)<20: #determinar se a cobra "comeu" a comida
             x=random.randint(-285,285)
             y=random.randint(-285,260)
-            comida.goto(x,y) #comida é movida para uma nova posição aleatória na tela
-            
+            comida.goto(x,y) #comida é movida para uma nova posição aleatória na tela            
             novo_corpo=turtle.Turtle()#cria mais um pedaço do corpo
             novo_corpo.speed(0)
             novo_corpo.shape("square")
@@ -146,14 +155,14 @@ def iniciar_jogo():
 
             if score % 50 == 0:  # Aumenta a velocidade a cada 100 pontos
                 delay -= 0.02
-         
+            
+            if score % 100 == 0:  # Adiciona um novo inimigo a cada 100 pontos
+                criar_inimigo()
         for index in range(len(tamanho)-1,0,-1):#posiciona o corpo
             x=tamanho[index-1].xcor()#o pedaço do corpo assume a posição do anterior 
             y=tamanho[index-1].ycor()
             tamanho[index].goto(x,y)
             
-
-    
         if len(tamanho)>0: # faz o corpo seguir a cobra
             x=cobra.xcor()
             y=cobra.ycor()
@@ -166,24 +175,33 @@ def iniciar_jogo():
                 time.sleep(1)
                 cobra.goto(0,0)  #volta a origem
                 cobra.direction="stop"
-
                 for corpo in tamanho:
                     corpo.goto(1000,1000) #os pedaços do corpo saem da tela
-
                 tamanho.clear()#apaga o tamanho do corpo, a quantidade fica 0
-
                 score = 0
-
                 delay = 0.1
-
                 t2.clear()
                 t2.write("Score: {}  High Score: {}".format(score, high_score), align="center",font=("Courier", 24, "normal"))
 
+            for inimigo in inimigos:
+                if cobra.distance(inimigo) < 10: #caso tocar o inimigo
+                    time.sleep(1)
+                    cobra.goto(0, 0)
+                    cobra.direction = "stop"
+                    
+                    for corpo in tamanho: 
+                        corpo.goto(1000, 1000)
+                    tamanho.clear()
+                    score = 0
+                    delay = 0.1
+                    t2.clear()
+                    t2.write("Score: {}  High Score: {}".format(score, high_score), align="center", font=("Courier", 24, "normal"))
 
         time.sleep(delay)
    
     game_loop()
-
+    t1.ontimer(game_loop, int(delay * 1000))
+    
 tela_inicio = tk.Tk() # criação da tela de início
 tela_inicio.title("Tela de Início")
 
