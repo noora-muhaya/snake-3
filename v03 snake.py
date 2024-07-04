@@ -8,6 +8,7 @@ delay = 0.1 # tempo de espera entre cada movimento da cobra
 score = 0 # pontuação atual do jogador 
 high_score = 0  # maior pontuação registrada
 inimigos = []
+comidas=[]
 
 def iniciar_jogo():
     global score, high_score, delay
@@ -15,7 +16,7 @@ def iniciar_jogo():
     
     t1 = turtle.Screen()
     t1.title("trabalho final-jogo de cobra")
-    t1.bgcolor("#D1A9A9")
+    t1.bgcolor("#67CB57")
     t1.setup(width=600, height=600)
     t1.tracer(0) # controla a atualização da tela (0 para desativar animação automática)
 
@@ -28,26 +29,30 @@ def iniciar_jogo():
     cobra.goto(0,0)
     cobra.direction = "stop" # define a direção inicial como parada
 
-    # comida da cobra
-    comida = turtle.Turtle()
-    comida.speed(0)
-    comida.shape("circle")
-    comida.color("red")
-    comida.penup()
-    comida.goto(0,100)
 
     def criar_inimigo():
         inimigo = turtle.Turtle()
         inimigo.speed(0)
         inimigo.shape("turtle")
-        inimigo.color("purple")
+        inimigo.color("green")
+        inimigo.shapesize(2)
         inimigo.left(90)
         inimigo.penup()
         inimigo.goto(random.randint(-285, 285), random.randint(-285, 260))
         inimigos.append(inimigo)
     
     criar_inimigo()  # Criar o primeiro inimigo
+    
+    def criar_comida():# comida da cobra
+        comida = turtle.Turtle()
+        comida.speed(0)
+        comida.shape("circle")
+        comida.color("red")
+        comida.penup()
+        comida.goto(random.randint(-285, 285), random.randint(-285, 260))
+        comidas.append(comida)
 
+    criar_comida()
     tamanho = []  # armazenar os segmentos do corpo da cobra
 
     t2 = turtle.Turtle() # tartaruga que escreve a pontuação
@@ -104,7 +109,7 @@ def iniciar_jogo():
     def play_sound(sound_file, time=0):
         winsound.PlaySound(sound_file, winsound.SND_ASYNC)
 
-    play_sound("The Pink Panther Theme Music موسيقى النمر الوردي.mp3")
+    play_sound("snake.wav")
 
     def mover_inimigos():
         for inimigo in inimigos:
@@ -114,7 +119,13 @@ def iniciar_jogo():
         t1.ontimer(mover_inimigos, 5000)  # Muda a posição dos inimigos a cada 5 segundos
 
     mover_inimigos()  # Iniciar o movimento dos inimigos de forma independente
-  
+    def mover_comida():
+        for comida in comidas:
+            x = random.randint(-285, 285)
+            y = random.randint(-285, 260)
+            comida.goto(x, y)
+        
+    
     def game_loop():
         global delay, score, high_score
         t1.update() # atualização da tela
@@ -124,6 +135,7 @@ def iniciar_jogo():
             time.sleep(1) # o jogo pausa por 1 segundo
             cobra.goto(0,0) # reposicionar no centro da tela
             cobra.direction = "stop" # não se mover antes de começar jogar
+            
             for corpo in tamanho:
                 corpo.goto(1000,1000) # o corpo da cobra sai da tela, fica só a cabeça
             tamanho.clear() # remover o corpo da cobra
@@ -132,39 +144,50 @@ def iniciar_jogo():
             t2.clear() # limpa a "caneta"
             t2.write("Score: {}  High Score: {}".format(score, high_score), align="center", font=("Courier", 24, "normal")) # A pontuação exibida na tela é atualizada para refletir a pontuação atual e a maior pontuação registrada.
 
-            # Remove todos os inimigos e cria um novo
+            # remove todos os inimigos e cria um novo
             for inimigo in inimigos:
                 inimigo.goto(1000, 1000)
             inimigos.clear()
             criar_inimigo()
 
-        if cobra.distance(comida) < 20: # determinar se a cobra "comeu" a comida
-            x = random.randint(-285, 285)
-            y = random.randint(-285, 260)
-            comida.goto(x, y) # comida é movida para uma nova posição aleatória na tela            
-            novo_corpo = turtle.Turtle() # cria mais um pedaço do corpo
-            novo_corpo.speed(0)
-            novo_corpo.shape("square")
-            novo_corpo.color("brown")
-            novo_corpo.penup()
-            tamanho.append(novo_corpo) # a lista do tamanho ganha mais um corpo
-            delay -= 0.001
-            if delay < 0.01:
-                delay = 0.01
-            score += 10 # a pontuação aumenta
+            # remove todos as comidas e cria uma nova
+            for comida in comidas:
+                comida.goto(1000, 1000)
+            comidas.clear()
+            criar_comida()
 
-            if score > high_score: # verifica a pontuação atual e a maior pontuação
-                high_score = score
-            t2.clear()
-            t2.write("Score: {}  High Score: {}".format(score, high_score), align="center", font=("Courier", 24, "normal"))
 
-            if score % 50 == 0:  # Aumenta a velocidade a cada 50 pontos
-                delay -= 0.02
+        for comida in comidas: # verifica todas comidas na lista de comidas
+            if cobra.distance(comida) < 20: # determinar se a cobra "comeu" a comida
+                x = random.randint(-285, 285)
+                y = random.randint(-285, 260)
+                comida.goto(x,y) # comida é movida para uma nova posição aleatória na tela            
+                novo_corpo = turtle.Turtle() # cria mais um pedaço do corpo
+                novo_corpo.speed(0)
+                novo_corpo.shape("square")
+                novo_corpo.color("brown")
+                novo_corpo.penup()
+                tamanho.append(novo_corpo) # a lista do tamanho ganha mais um corpo
+                delay -= 0.001
                 if delay < 0.01:
                     delay = 0.01
-            
-            if score % 100 == 0:  # Adiciona um novo inimigo a cada 100 pontos
-                criar_inimigo()
+                score += 10 # a pontuação aumenta
+
+                if score > high_score: # verifica a pontuação atual e a maior pontuação
+                    high_score = score
+                t2.clear()
+                t2.write("Score: {}  High Score: {}".format(score, high_score), align="center", font=("Courier", 24, "normal"))
+
+                if score % 50 == 0:  #aumenta a velocidade a cada 50 pontos
+                    delay -= 0.02
+                    if delay < 0.01:
+                        delay = 0.01
+                
+                if score % 100 == 0:  # adiciona um novo inimigo a cada 100 pontos
+                    criar_inimigo()
+
+                if score % 50 == 0:  # adiciona uma nova comida a cada 10 pontos
+                    criar_comida()
                 
         for index in range(len(tamanho)-1, 0, -1): # posiciona o corpo
             x = tamanho[index-1].xcor() # o pedaço do corpo assume a posição do anterior 
@@ -191,24 +214,41 @@ def iniciar_jogo():
                 t2.clear()
                 t2.write("Score: {}  High Score: {}".format(score, high_score), align="center", font=("Courier", 24, "normal"))
 
+                for inimigo in inimigos:
+                    inimigo.goto(1000, 1000) # os inimigos saem da tela também
+                inimigos.clear()
+                criar_inimigo()
+
+                for comida in comidas:
+                    comida.goto(1000, 1000)# remove todos as comidas e cria uma nova
+                comidas.clear()
+                criar_comida()
+
+
+                
         for inimigo in inimigos:
-            if cobra.distance(inimigo) < 10: # caso tocar o inimigo
+            if cobra.distance(inimigo) < 30: # caso tocar o inimigo
                 time.sleep(1)
                 cobra.goto(0, 0)
                 cobra.direction = "stop"
                 
                 for corpo in tamanho: 
-                    corpo.goto(1000, 1000)
+                    corpo.goto(1000, 1000) #se o corpo encostar no inimigo o corpo sai da tela
                 tamanho.clear()
-                score = 0
+                score = 0 
                 delay = 0.1
                 t2.clear()
                 t2.write("Score: {}  High Score: {}".format(score, high_score), align="center", font=("Courier", 24, "normal"))
 
                 for inimigo in inimigos:
-                    inimigo.goto(1000, 1000)
+                    inimigo.goto(1000, 1000) # os inimigos saem da tela também
                 inimigos.clear()
                 criar_inimigo()
+
+                for comida in comidas:
+                    comida.goto(1000, 1000)# remove todos as comidas e cria uma nova
+                comidas.clear()
+                criar_comida()
         
         time.sleep(delay)
         t1.ontimer(game_loop, int(delay * 1000))
@@ -219,6 +259,6 @@ tela_inicio = tk.Tk() # criação da tela de início
 tela_inicio.title("Tela de Início")
 
 botao_iniciar = tk.Button(tela_inicio, text="PLAY", command=iniciar_jogo, font=("Courier", 100)) # cria botão de início
-botao_iniciar.pack(pady=300)
+botao_iniciar.pack(pady=100)
 
 tela_inicio.mainloop()
