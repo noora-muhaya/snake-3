@@ -2,14 +2,12 @@
 import turtle
 import time
 import random #gera numeros aleatórios
+import winsound #tocar musica
 import tkinter as tk 
 
 delay = 0.1 # tempo de espera entre cada movimento da cobra
 score=0 #pontuação atual do jogador 
 high_score=0  #maior pontuação registrada
-
-
-
 
 def iniciar_jogo():
     global score, high_score, delay
@@ -92,6 +90,10 @@ def iniciar_jogo():
     t1.onkeypress(esquerda,"Left")
     t1.onkeypress(direita,"Right")
 
+    def play_sound(sound_file, time=0):
+        winsound.PlaySound(sound_file, winsound.SND_ASYNC)
+
+    play_sound("The-Pink-Panther-Theme-Music-موسيقى-النمر-الوردي.wav")
 
     while True: #sempre irá executar
         t1.update() #atualização da tela
